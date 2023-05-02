@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/accordion';
 
 export default function Home() {
+  const [title, setTitle] = useState<string>('嘘をできないチャットGPT');
   const [query, setQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,6 +41,10 @@ export default function Home() {
   useEffect(() => {
     textAreaRef.current?.focus();
   }, []);
+  
+  function removeFileExtension(filename: string) {
+    return String(filename).replace(/\.[^/.]+$/, "");
+  }
 
   //handle form submission
   async function handleSubmit(e: any) {
@@ -80,7 +85,7 @@ export default function Home() {
         }),
       });
       const data = await response.json();
-      console.log('data', data);
+      // console.log('data', data);
 
       if (data.error) {
         setError(data.error);
@@ -97,8 +102,10 @@ export default function Home() {
           ],
           history: [...state.history, [question, data.text]],
         }));
+        
+        setTitle(removeFileExtension(data.sourceDocuments[0].metadata.source.split("/").slice(-1)))
       }
-      console.log('messageState', messageState);
+      // console.log('messageState', messageState);
 
       setLoading(false);
 
@@ -124,8 +131,8 @@ export default function Home() {
     <>
       <Layout>
         <div className="mx-auto flex flex-col gap-4">
-          <h1 className="text-2xl font-bold leading-[1.1] tracking-tighter text-center">
-            嘘をできないチャットGPT
+          <h1 className="text-2xl font-bold leading-[1.1] tracking-tighter text-center" key="home">
+            {title}
           </h1>
           <main className={styles.main}>
             <div className={styles.cloud}>
